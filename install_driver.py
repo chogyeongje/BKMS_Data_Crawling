@@ -12,7 +12,7 @@ def install_driver():
     options.add_argument("disable-infobars")
     options.add_argument("--disable-extensions")
 
-    driveManager ='/home/eco/private/chromedriver' # ChromeDriverManager().install()
+    driveManager = ChromeDriverManager().install()
     print(driveManager)
 
     return driveManager, options
