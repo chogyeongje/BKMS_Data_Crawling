@@ -16,7 +16,9 @@ pip3 install -r requirements.txt
 >
 > interval : 크롤링한 데이터를 저장할 간격 (ex-10 일경우 10개의 데이터마다 csv 로 저장)
 >
-> max_count : 최대로 크롤링할 문서 갯수
+> max_count : 크롤링할 최대 문서 수
+>
+> max_author_count : 논문 데이터 크롤링 시 참고할 최대 저자 수
 >
 > author_link : 저자 링크를 크롤링하고 싶은 경우
 >

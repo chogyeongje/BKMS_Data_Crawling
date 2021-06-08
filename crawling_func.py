@@ -317,6 +317,7 @@ def crawling_scholars_by_author(gf, file_path, max_count):
     global driver, result, count
 
     driver_setup()
+    author_count = 0
 
     for path in glob.glob(file_path +  "/*.csv"):
         df = pd.read_csv(path)
@@ -364,8 +365,9 @@ def crawling_scholars_by_author(gf, file_path, max_count):
 
                 result.append(info)
                 count += 1
+                author_count += 1
                 # print(count)
-                if count > max_scholar_count:
+                if author_count > max_author_count:
                     raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
                 elif count % gf.interval == 0:
                     save_scholars(gf, result)
