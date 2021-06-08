@@ -45,7 +45,7 @@ python3 run.py --author --interval=1000 --max_count=100000
 3. 논문 데이터 크롤링
 
 ```
-python3 run.py --scholar --interval=1000 --max_count=100000
+python3 run.py --scholar --interval=1000 --max_author_count=10000
 ```
 
 
