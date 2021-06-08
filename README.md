@@ -39,13 +39,13 @@ python3 run.py --author_link --interval=1000 --max_count=10000
 2. 저자 데이터 크롤링
 
 ```
-python3 run.py --author --interval=1000 --max_count=10000
+python3 run.py --author --interval=1000 --max_count=100000
 ```
 
 3. 논문 데이터 크롤링
 
 ```
-python3 run.py --scholar --interval=100 --max_count=10000
+python3 run.py --scholar --interval=1000 --max_count=100000
 ```
 
 

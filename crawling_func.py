@@ -312,7 +312,7 @@ def _crawling_scholar_links_detail(gf, max_count):
             save_scholar_links(gf, result)
             result = []
 
-def crawling_scholars_by_author(gf, file_path, max_count):
+def crawling_scholars_by_author(gf, file_path, start, max_count):
 
     global driver, result, count
 
@@ -322,6 +322,7 @@ def crawling_scholars_by_author(gf, file_path, max_count):
     for path in glob.glob(file_path +  "/*.csv"):
         df = pd.read_csv(path)
         for url in df['url']:
+
             print('접속중 >>> {}'.format(url))
             driver.get(url)
             driver.implicitly_wait(3)
@@ -343,6 +344,11 @@ def crawling_scholars_by_author(gf, file_path, max_count):
             # 각 논문마다 정보 들고오기
             xpath_popup_close = '/html/body/div/div[8]/div/div[1]/a'
             for scholar in scholars:
+
+                if gf.start < start:
+                    gf.start += 1
+                    continue
+
                 xpath_detail = "./td[@class='gsc_a_t']/a"
                 scholar_click = scholar.find_element_by_xpath(xpath_detail)
 

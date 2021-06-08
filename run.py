@@ -23,6 +23,7 @@ def main(argv):
     parser.add_argument('--url', help='Start URL', default='https://scholar.google.com/citations?view_op=search_authors&mauthors=machine+learning&hl=ko&oi=drw')
     parser.add_argument('--interval', help='Save Data Interval', type=int, default=1000)
     parser.add_argument('--max_count', help='Max Count of Crawling Scholars', type=int, default=10000)
+    parser.add_argument('--start', help='Start Point of Crawling Scholars', type=int, default=0)
     parser.add_argument('--max_author_count', help='Max Count of Author when Crawling scholars', type=int, default=100)
     parser.add_argument('--author_link', help='if you want to crawling scholar', action='store_true', default=False)
     parser.add_argument('--scholar_link', help='if you want to crawling scholar', action='store_true', default=False)
@@ -44,7 +45,7 @@ def main(argv):
     if args.author:
         crawling_authors(gf, al, args.max_count)
     if args.scholar:
-        crawling_scholars_by_author(gf, al, args.max_author_count)
+        crawling_scholars_by_author(gf, al, args.start, args.max_author_count)
         # crawling(gf, args.url, args.max_count)
         # crawling_scholars(gf, sl, args.max_count)
     
