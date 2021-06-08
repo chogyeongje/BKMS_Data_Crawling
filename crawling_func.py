@@ -322,6 +322,7 @@ def crawling_scholars_by_author(gf, file_path, start, max_count):
     for path in glob.glob(file_path +  "/*.csv"):
         df = pd.read_csv(path)
         for url in df['url']:
+            author_count += 1
 
             print('접속중 >>> {}'.format(url))
             driver.get(url)
@@ -371,11 +372,8 @@ def crawling_scholars_by_author(gf, file_path, start, max_count):
 
                 result.append(info)
                 count += 1
-                author_count += 1
                 # print(count)
-                if author_count > max_author_count:
-                    raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
-                elif count % gf.interval == 0:
+                if count % gf.interval == 0:
                     save_scholars(gf, result)
                     result = []
 
@@ -384,6 +382,9 @@ def crawling_scholars_by_author(gf, file_path, start, max_count):
                 
                 # 초당 request 제한이 10개이기 때문에 sleep
                 sleep(random.randint(1, 3))   
+            
+            if author_count > max_author_count:
+                raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
 
 def crawling(gf, url, max_scholar = 10000):
 
