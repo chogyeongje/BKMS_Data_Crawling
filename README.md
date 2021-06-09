@@ -20,6 +20,10 @@ pip3 install -r requirements.txt
 >
 > max_author_count : 논문 데이터 크롤링 시 참고할 최대 저자 수
 >
+> start : 시작할 논문 번호 (ex- 101 이라 입력하면 101번째 논문부터 저장)
+>
+> file_path : 논문 crawling 시 사용할 csv 파일 이름
+>
 > author_link : 저자 링크를 크롤링하고 싶은 경우
 >
 > author : 저자 데이터를 크롤링 하고 싶은 경우 (저자 링크 크롤링 후 사용)
@@ -45,7 +49,7 @@ python3 run.py --author --interval=1000 --max_count=100000
 3. 논문 데이터 크롤링
 
 ```
-python3 run.py --scholar --interval=1000 --max_author_count=10000
+python3 run.py --scholar --start=1 --interval=1000 --file_path=1_10000.csv --max_author_count=10000
 ```
 
 
