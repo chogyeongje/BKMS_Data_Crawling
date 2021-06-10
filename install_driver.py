@@ -12,13 +12,14 @@ def install_driver():
     options.add_argument("start-maximized")
     options.add_argument("disable-infobars")
     options.add_argument("--disable-extensions")
+    options.add_experimental_option('debuggerAddreess', "127.0.0.1:9222")
     ua = UserAgent()
     userAgent = ua.random
     print(userAgent)
     options.add_argument(f'user-agent={userAgent}')
 
     # driveManager =  ChromeDriverManager().install()
-    driveManager = '/home/eco/private/chromedriver'
+    driveManager = './chromedriver'
     print(driveManager)
 
     return driveManager, options
