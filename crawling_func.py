@@ -363,25 +363,23 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
         for url in df['url']:
             author_count += 1
 
+            print('접속중 >>> {}'.format(url))
+            driver.get(url)
+            driver.implicitly_wait(3)
+            
+            # 모든 논문 리스트 불러오기
+            xpath_show_more = '//*[@id="gsc_bpf_more"]'
             while True:
-
-                print('접속중 >>> {}'.format(url))
-                driver.get(url)
-                driver.implicitly_wait(3)
-                
-                # 모든 논문 리스트 불러오기
-                xpath_show_more = '//*[@id="gsc_bpf_more"]'
-                while True:
-                    try:
-                        show_more = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath_show_more)))
-                        show_more.click()
-                    except:
-                        print('Last page reached')
-                        break
-                
-                # 논문 선택
-                xpath_scholars = "//tr[@class='gsc_a_tr']"
-                scholars = driver.find_elements_by_xpath(xpath_scholars)
+                try:
+                    show_more = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath_show_more)))
+                    show_more.click()
+                except:
+                    print('Last page reached')
+                    break
+            
+            # 논문 선택
+            xpath_scholars = "//tr[@class='gsc_a_tr']"
+            scholars = driver.find_elements_by_xpath(xpath_scholars)
 
             # 각 논문마다 정보 들고오기
             xpath_popup_close = '/html/body/div/div[8]/div/div[1]/a'
