@@ -325,8 +325,6 @@ def check_scholars_count(gf, file_path):
                 xpath_scholars = "//tr[@class='gsc_a_tr']"
                 scholars = driver.find_elements_by_xpath(xpath_scholars)
 
-                sleep(random.randint(2, 12))
-
                 if len(scholars) < 1:
                     print('delete all cookies')
                     driver.delete_all_cookies()
@@ -334,6 +332,7 @@ def check_scholars_count(gf, file_path):
             
                 total += len(scholars)
                 print(total)
+                sleep(random.randint(2, 12))
 
     print('all scholars : ', total)
 
