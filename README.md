@@ -37,7 +37,7 @@ pip3 install -r requirements.txt
 1. 저자 링크 데이터 크롤링
 
 ```
-python3 run.py --author_link --interval=1000 --max_count=10000
+python3 run.py --author_link --interval=1000 --max_count=10000 --url=https://~
 ```
 
 2. 저자 데이터 크롤링
@@ -48,8 +48,10 @@ python3 run.py --author --interval=1000 --max_count=100000
 
 3. 논문 데이터 크롤링
 
+file_path : csv 를 명시할 경우 해당 파일에 있는 저자 논문만 크롤링, 명시하지 않은 경우 author_links 에 있는 모든 저자 논문 크롤링
+
 ```
-python3 run.py --scholar --start=1 --interval=1000 --file_path=1_10000.csv --max_author_count=10000
+python3 run.py --scholar --start=1 --interval=1000 --max_author_count=10000
 ```
 
 
@@ -68,3 +70,68 @@ python3 run.py --scholar --start=1 --interval=1000 --file_path=1_10000.csv --max
 
 1. 간혹 ChromeDriveManager 가 동작하지 않는 경우, `install_driver.py` 파일에서 driveManager 변수에 직접 설치한 ChromeDrivier 경로 입력
 2. 논문 데이터는 크롤링 도중 매크로 방지에 의해 동작하지 않을 수 있음;
+
+
+
+
+
+# 서버 세팅
+
+jupyter hub 을 사용할 경우 서버를 시작할 때마다 아래 과정을 실행하여야 한다.
+
+### google-chrome 설치
+
+```
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+```
+
+```
+sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+```
+
+```
+sudo apt-get update
+```
+
+```
+sudo apt-get install google-chrome-stable
+```
+
+```
+google-chrome --version 
+```
+
+### chromedriver 설치
+
+```
+!wget -N https://chromedriver.storage.googleapis.com/91.0.4472.19/chromedriver_linux64.zip
+```
+
+```
+!unzip chromedriver_linux64.zip
+```
+
+```
+!mv chromedriver BKMS_Data_Crawling/
+```
+
+
+
+# Colab 세팅
+
+colab 을 사용하는 경우 아래와 같은 코드를 실행하여야 한다.
+
+```
+!sudo apt-get update
+```
+
+```
+!apt install chromium-chromedriver
+```
+
+```
+!cp /usr/lib/chromium-browser/chromedriver /usr/bin
+```
+
+이후 install_driver.py 의 `driveManager` 변수값을 `chromedriver` 로 수정
+

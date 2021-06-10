@@ -12,10 +12,6 @@ def install_driver():
     options.add_argument("start-maximized")
     options.add_argument("disable-infobars")
     options.add_argument("--disable-extensions")
-    # ua = UserAgent()
-    # userAgent = ua.random
-    # print(userAgent)
-    # options.add_argument(f'user-agent={userAgent}')
 
     # driveManager =  ChromeDriverManager().install()
     driveManager = './chromedriver'

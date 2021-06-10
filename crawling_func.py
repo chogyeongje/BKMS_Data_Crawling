@@ -97,8 +97,14 @@ def driver_setup():
 def crawling_authors(gf, file_path, max_count):
 
     global driver, result, count
+
+    if file_path.endswith('.csv'):
+        file_list = [file_path]
+    else:
+        file_list = list(glob.glob(file_path +  "/*.csv"))
+        file_list = sorted(file_list, key=lambda x: int(x.split('/')[-1].split('_')[0]))
     
-    for path in glob.glob(file_path +  "/*.csv"):
+    for path in file_list:
         df = pd.read_csv(path)
         for url in df['url']:
 
@@ -344,10 +350,11 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
 
     author_count = 0
 
-    file_list = list(glob.glob(file_path +  "/*.csv"))
-    file_list = sorted(file_list, key=lambda x: int(x.split('/')[-1].split('_')[0]))
-
-    total = 0
+    if file_path.endswith('.csv'):
+        file_list = [file_path]
+    else:
+        file_list = list(glob.glob(file_path +  "/*.csv"))
+        file_list = sorted(file_list, key=lambda x: int(x.split('/')[-1].split('_')[0]))
 
     for path in file_list:
         print(path)
