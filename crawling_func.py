@@ -101,6 +101,7 @@ def crawling_authors(gf, file_path, max_count):
     for path in glob.glob(file_path +  "/*.csv"):
         df = pd.read_csv(path)
         for url in df['url']:
+
             while True:
                 try:
                     response = requests.get(url)
@@ -130,6 +131,7 @@ def crawling_authors(gf, file_path, max_count):
 
                     result.append(info)
                     count += 1
+                    print(info['name'], count)
 
                     if count > max_count:
                         raise MaxCrawlingError("The maximum number of authors that can be crawled has been reached.")
@@ -139,6 +141,8 @@ def crawling_authors(gf, file_path, max_count):
                     break
                 except:
                     driver.delete_all_cookies()
+
+            sleep(random.random() + 1)
 
 def crawling_author_links(gf, url, max_count):
 
@@ -172,6 +176,10 @@ def crawling_author_links(gf, url, max_count):
                 elif count % gf.interval == 0:
                     save_author_links(gf, result)
                     result = []
+            
+            xpath_next = '//*[@id="gsc_authors_bottom_pag"]/div/button[2]'
+            elem_next = driver.find_element_by_xpath(xpath_next)  
+            elem_next.click()
             
         except (TimeoutException, WebDriverException) as e:
             print("Last page reached. Error: {}".format(e))
@@ -278,7 +286,58 @@ def _crawling_scholar_links_detail(gf, max_count):
             save_scholar_links(gf, result)
             result = []
 
-def crawling_scholars_by_author(gf, path, start, max_author_count):
+def check_scholars_count(gf, file_path):
+    global driver, result, count
+
+    driver_setup()
+
+    author_count = 0
+
+    file_list = list(glob.glob(file_path +  "/*.csv"))
+    file_list = sorted(file_list, key=lambda x: int(x.split('/')[-1].split('_')[0]))
+
+    total = 0
+
+    for path in file_list:
+        print(path)
+
+        df = pd.read_csv(path)
+        for url in df['url']:
+            author_count += 1
+
+            while True:
+
+                print('접속중 >>> {}'.format(url))
+                driver.get(url)
+                driver.implicitly_wait(3)
+                
+                # 모든 논문 리스트 불러오기
+                xpath_show_more = '//*[@id="gsc_bpf_more"]'
+                while True:
+                    try:
+                        show_more = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath_show_more)))
+                        show_more.click()
+                    except:
+                        print('Last page reached')
+                        break
+                
+                # 논문 선택
+                xpath_scholars = "//tr[@class='gsc_a_tr']"
+                scholars = driver.find_elements_by_xpath(xpath_scholars)
+
+                sleep(random.randint(2, 12))
+
+                if len(scholars) < 1:
+                    print('delete all cookies')
+                    driver.delete_all_cookies()
+                    continue
+            
+                total += len(scholars)
+                print(total)
+
+    print('all scholars : ', total)
+
+def crawling_scholars_by_author(gf, file_path, start, max_author_count):
 
     global driver, result, count
 
@@ -286,89 +345,98 @@ def crawling_scholars_by_author(gf, path, start, max_author_count):
 
     author_count = 0
 
-    # for path in glob.glob(file_path +  "/*.csv"):
-    print(path)
+    file_list = list(glob.glob(file_path +  "/*.csv"))
+    file_list = sorted(file_list, key=lambda x: int(x.split('/')[-1].split('_')[0]))
 
-    df = pd.read_csv(path)
-    for url in df['url']:
-        author_count += 1
+    total = 0
 
-        print('접속중 >>> {}'.format(url))
-        driver.get(url)
-        driver.implicitly_wait(3)
-        
-        # 모든 논문 리스트 불러오기
-        xpath_show_more = '//*[@id="gsc_bpf_more"]'
-        while True:
-            try:
-                show_more = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath_show_more)))
-                show_more.click()
-            except:
-                print('Last page reached')
-                break
-        
-        # 논문 선택
-        xpath_scholars = "//tr[@class='gsc_a_tr']"
-        scholars = driver.find_elements_by_xpath(xpath_scholars)
-        
-        # 각 논문마다 정보 들고오기
-        xpath_popup_close = '/html/body/div/div[8]/div/div[1]/a'
-        for scholar in scholars:
+    for path in file_list:
+        print(path)
 
-            if gf.start < start - 1:
-                gf.start += 1
-                continue
+        df = pd.read_csv(path)
+        for url in df['url']:
+            author_count += 1
 
             while True:
-                try:
-                    xpath_detail = "./td[@class='gsc_a_t']/a"
-                    scholar_click = scholar.find_element_by_xpath(xpath_detail)
 
-                    info = {}
-                    title = scholar_click.text
-                    info['제목'] = title
+                print('접속중 >>> {}'.format(url))
+                driver.get(url)
+                driver.implicitly_wait(3)
+                
+                # 모든 논문 리스트 불러오기
+                xpath_show_more = '//*[@id="gsc_bpf_more"]'
+                while True:
+                    try:
+                        show_more = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath_show_more)))
+                        show_more.click()
+                    except:
+                        print('Last page reached')
+                        break
+                
+                # 논문 선택
+                xpath_scholars = "//tr[@class='gsc_a_tr']"
+                scholars = driver.find_elements_by_xpath(xpath_scholars)
 
-                    scholar_click.click()
+            # 각 논문마다 정보 들고오기
+            xpath_popup_close = '/html/body/div/div[8]/div/div[1]/a'
+            for scholar in scholars:
 
-                    xpath_popup_view = "/html/body/div/div[8]/div/div[2]/div/div/div[2]/form"
-                    popup_view = driver.find_element_by_xpath(xpath_popup_view)
+                if gf.start < start:
+                    gf.start += 1
+                    continue
 
-                    popup_table = popup_view.find_elements_by_xpath("./div[@id='gsc_vcd_table']/div[@class='gs_scl']")
-                    for row in popup_table:
-                        row_title = row.find_element_by_xpath("./div[@class='gsc_vcd_field']").text
-                        if row_title == '전체 인용횟수':
-                            citation_count = row.find_element_by_xpath("./div[@class='gsc_vcd_value']/div[1]/a").text
-                            info[title] = citation_count
-                            graph_x = row.find_elements_by_xpath('//*[@id="gsc_vcd_graph_bars"]/span')
-                            graph_y = row.find_elements_by_xpath('//*[@id="gsc_vcd_graph_bars"]/a/span')
-                            for x, y in zip(graph_x, graph_y):
-                                info[x.text] = y.get_attribute('textContent')
-                        else:
-                            row_value = row.find_element_by_xpath("./div[@class='gsc_vcd_value']").text
-                            info[row_title] = row_value
+                while True:
+                    try:
+                        xpath_detail = "./td[@class='gsc_a_t']/a"
+                        scholar_click = scholar.find_element_by_xpath(xpath_detail)
 
-                    result.append(info)
-                    count += 1
-                    # print(count)
-                    if count % gf.interval == 0:
-                        save_scholars(gf, result)
-                        result = []
+                        info = {}
+                        title = scholar_click.text
+                        info['제목'] = title
 
-                    popup_close = driver.find_element_by_xpath(xpath_popup_close)
-                    popup_close.click()
-                    
-                    # 초당 request 제한이 10개이기 때문에 sleep
-                    sleep(random.random() + 0.2)
-                    break
-                except Exception as e:
-                    print(f'some exception found when crawling {count}')
-                    print(e)
-                    driver.delete_all_cookies()
-                    popup_close = driver.find_element_by_xpath(xpath_popup_close)
-                    popup_close.click()
+                        scholar_click.click()
 
-        if author_count > max_author_count:
-            raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
+                        xpath_popup_view = "/html/body/div/div[8]/div/div[2]/div/div/div[2]/form"
+                        popup_view = driver.find_element_by_xpath(xpath_popup_view)
+
+                        popup_table = popup_view.find_elements_by_xpath("./div[@id='gsc_vcd_table']/div[@class='gs_scl']")
+                        for row in popup_table:
+                            row_title = row.find_element_by_xpath("./div[@class='gsc_vcd_field']").text
+                            if row_title == '전체 인용횟수':
+                                citation_count = row.find_element_by_xpath("./div[@class='gsc_vcd_value']/div[1]/a").text
+                                info[title] = citation_count
+                                graph_x = row.find_elements_by_xpath('//*[@id="gsc_vcd_graph_bars"]/span')
+                                graph_y = row.find_elements_by_xpath('//*[@id="gsc_vcd_graph_bars"]/a/span')
+                                for x, y in zip(graph_x, graph_y):
+                                    info[x.text] = y.get_attribute('textContent')
+                            else:
+                                row_value = row.find_element_by_xpath("./div[@class='gsc_vcd_value']").text
+                                info[row_title] = row_value
+
+                        result.append(info)
+                        count += 1
+                        # print(count)
+                        if count % gf.interval == 0:
+                            save_scholars(gf, result)
+                            result = []
+
+                        popup_close = driver.find_element_by_xpath(xpath_popup_close)
+                        popup_close.click()
+                        
+                        print(title, count)
+
+                        # 초당 request 제한이 10개이기 때문에 sleep
+                        sleep(random.random() + 1)
+                        break
+                    except Exception as e:
+                        print(f'some exception found when crawling {count}')
+                        print(e)
+                        driver.delete_all_cookies()
+                        popup_close = driver.find_element_by_xpath(xpath_popup_close)
+                        popup_close.click()
+
+            if author_count > max_author_count:
+                raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
 
 
 def crawling(gf, url, max_scholar = 10000):
