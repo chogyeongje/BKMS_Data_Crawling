@@ -332,6 +332,10 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
             xpath_scholars = "//tr[@class='gsc_a_tr']"
             scholars = driver.find_elements_by_xpath(xpath_scholars)
 
+            asd[name] = len(scholars)
+            save_author_scholar_dict(asd)
+
+
             # 각 논문마다 정보 들고오기
             xpath_popup_close = '/html/body/div/div[8]/div/div[1]/a'
             for scholar in scholars:
@@ -398,12 +402,16 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
 
 def author_scholar_dict():
 
-    with open('./author_scholar_dict.txt') as f:
+    with open('./author_scholar_dict.txt', 'r') as f:
         asd = f.readline()
         asd = ast.literal_eval(asd)
 
     asd = dict() if asd is None else asd
     return asd
+
+def save_author_scholar_dict(asd):
+    with open('./author_scholar_dict.txt', 'w') as f:
+        f.write(str(asd))
 
 
 class MaxCrawlingError(Exception):
