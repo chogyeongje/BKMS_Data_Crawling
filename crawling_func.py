@@ -24,6 +24,7 @@ from bs4 import BeautifulSoup
 import requests
 import requests.exceptions
 import glob
+import ast
 
 count, a_count = 0, 0
 result, a_result = [], []
@@ -298,12 +299,20 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
         file_list = list(glob.glob(file_path +  "/*.csv"))
         file_list = sorted(file_list, key=lambda x: int(x.split('/')[-1].split('_')[0]))
 
+    asd = author_scholar_dict()
+
     for path in file_list:
         print(path)
 
         df = pd.read_csv(path)
-        for url in df['url']:
+        for name, url in zip(df['name'], df['url']):
             author_count += 1
+
+            if name in asd:
+                if gf.start + asd[name] < start:
+                    gf.start += asd[name]
+                    print(f'{author_count}-th author, total scholars : {gf.start}')
+                    continue
 
             print('접속중 >>> {}'.format(url))
             driver.get(url)
@@ -385,6 +394,16 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
 
             if author_count > max_author_count:
                 raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
+
+
+def author_scholar_dict():
+
+    with open('./author_scholar_dict.txt') as f:
+        asd = f.readline()
+        asd = ast.literal_eval(asd)
+
+    asd = dict() if asd is None else asd
+    return asd
 
 
 class MaxCrawlingError(Exception):
