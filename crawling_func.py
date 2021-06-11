@@ -367,7 +367,7 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
                             row_title = row.find_element_by_xpath("./div[@class='gsc_vcd_field']").text
                             if row_title == '전체 인용횟수':
                                 citation_count = row.find_element_by_xpath("./div[@class='gsc_vcd_value']/div[1]/a").text
-                                info[title] = citation_count
+                                info[row_title] = citation_count
                                 graph_x = row.find_elements_by_xpath('//*[@id="gsc_vcd_graph_bars"]/span')
                                 graph_y = row.find_elements_by_xpath('//*[@id="gsc_vcd_graph_bars"]/a/span')
                                 for x, y in zip(graph_x, graph_y):
@@ -398,7 +398,7 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
                         popup_close = driver.find_element_by_xpath(xpath_popup_close)
                         popup_close.click()
             
-            print(f'{author_count}-th author, total scholars : {gf.start}')
+            print(f'{author_count}-th author, current start : {gf.start}')
 
             if author_count > max_author_count:
                 raise MaxCrawlingError("The maximum number of scholars that can be crawled has been reached.")
