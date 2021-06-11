@@ -332,6 +332,10 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
             xpath_scholars = "//tr[@class='gsc_a_tr']"
             scholars = driver.find_elements_by_xpath(xpath_scholars)
 
+            if len(scholars) < 1:
+                print('There is Some Problem, Please Retry')
+                return
+
             asd[name] = len(scholars)
             save_author_scholar_dict(asd)
 
@@ -401,6 +405,9 @@ def crawling_scholars_by_author(gf, file_path, start, max_author_count):
 
 
 def author_scholar_dict():
+
+    if not os.path.exists('./author_scholar_dict.txt'):
+        return dict()
 
     with open('./author_scholar_dict.txt', 'r') as f:
         asd = f.readline()
