@@ -39,9 +39,11 @@ def driver_setup():
     wait = WebDriverWait(driver, 10)
     print('driver setup done')
 
-def crawling_authors(gf, file_path, max_count):
+def crawling_authors(gf, file_path, max_count, start):
 
     global driver, result, count
+
+    driver_setup()
 
     if file_path.endswith('.csv'):
         file_list = [file_path]
@@ -52,41 +54,51 @@ def crawling_authors(gf, file_path, max_count):
     for path in file_list:
         df = pd.read_csv(path)
         for url in df['url']:
+            print(url)
 
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
+            if gf.start < start:
+                gf.start += 1
+                continue
 
-            info = {}
-            name = soup.select_one('#gsc_prf_in')
-            info['name'] = name.get_text()
-            job = soup.select_one('#gsc_prf_i > div:nth-of-type(2)')
-            info['job'] = job.get_text()
+            while True:
+                try:
+                    response = requests.get(url)
+                    soup = BeautifulSoup(response.text, 'html.parser')
 
-            keywords = soup.select('#gsc_prf_int > a')
-            keyword = []
-            for kw in keywords:
-                keyword.append(kw.get_text())        
-            info['keywords'] = ','.join(keyword)
+                    info = {}
+                    name = soup.select_one('#gsc_prf_in')
+                    info['name'] = name.get_text()
+                    job = soup.select_one('#gsc_prf_i > div:nth-of-type(2)')
+                    info['job'] = job.get_text()
 
-            rows = soup.select('#gsc_rsb_cit > div > div.gsc_md_hist_w > div > span')
-            values = soup.select('#gsc_rsb_cit > div > div.gsc_md_hist_w > div > a > span')
-            for row, value in zip(rows, values):
-                info[row.get_text()] = value.get_text()
+                    keywords = soup.select('#gsc_prf_int > a')
+                    keyword = []
+                    for kw in keywords:
+                        keyword.append(kw.get_text())        
+                    info['keywords'] = ','.join(keyword)
 
-            cols = soup.select('#gsc_rsb_st > tbody > tr > td.gsc_rsb_sc1')
-            values = soup.select('#gsc_rsb_st > tbody > tr > td:nth-of-type(2)')
-            for col, value in zip(cols, values):
-                info[col.get_text()] = value.get_text()
+                    rows = soup.select('#gsc_rsb_cit > div > div.gsc_md_hist_w > div > span')
+                    values = soup.select('#gsc_rsb_cit > div > div.gsc_md_hist_w > div > a > span')
+                    for row, value in zip(rows, values):
+                        info[row.get_text()] = value.get_text()
 
-            result.append(info)
-            count += 1
-            print(info['name'], count)
+                    cols = soup.select('#gsc_rsb_st > tbody > tr > td.gsc_rsb_sc1')
+                    values = soup.select('#gsc_rsb_st > tbody > tr > td:nth-of-type(2)')
+                    for col, value in zip(cols, values):
+                        info[col.get_text()] = value.get_text()
 
-            if count > max_count:
-                raise MaxCrawlingError("The maximum number of authors that can be crawled has been reached.")
-            elif count % gf.interval == 0:
-                save_authors(gf, result)
-                result = []
+                    result.append(info)
+                    count += 1
+                    print(info['name'], count)
+
+                    if count > max_count:
+                        raise MaxCrawlingError("The maximum number of authors that can be crawled has been reached.")
+                    elif count % gf.interval == 0:
+                        save_authors(gf, result)
+                        result = []
+                    break
+                except:
+                    driver.delete_all_cookies()
 
             sleep(random.random() + 1)
 

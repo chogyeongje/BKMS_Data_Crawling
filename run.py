@@ -45,7 +45,7 @@ def main(argv):
     if args.scholar_link:
       crawling_scholar_links(gf, args.url, args.max_count)
     if args.author:
-        crawling_authors(gf, al, args.max_count)
+        crawling_authors(gf, al, args.max_count, args.start)
     if args.scholar:
         file_path = al if args.file_path is None else args.file_path
         crawling_scholars_by_author(gf, file_path, args.start, args.max_author_count)
