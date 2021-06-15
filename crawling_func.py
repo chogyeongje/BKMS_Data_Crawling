@@ -104,7 +104,7 @@ def crawling_authors(gf, file_path, max_count, start):
             sleep(random.random() + 1)
 
     if len(result) > 0:
-        save_author_links(gf, result)
+        save_authors(gf, result)
 
     driver.quit()
 
