@@ -98,6 +98,7 @@ def crawling_authors(gf, file_path, max_count, start):
                         result = []
                     break
                 except:
+                    print('delete_cookies')
                     driver.delete_all_cookies()
 
             sleep(random.random() + 1)

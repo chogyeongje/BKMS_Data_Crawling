@@ -37,7 +37,7 @@ pip3 install -r requirements.txt
 1. 저자 링크 데이터 크롤링
 
 ```
-python3 run.py --author_link --interval=1000 --max_count=10000 --url=https://~
+python3 run.py --author_link --interval=1000 --max_count=10000 --url="https://~"
 ```
 
 2. 저자 데이터 크롤링
